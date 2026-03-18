@@ -1,0 +1,1 @@
+This is a "Hello World" exercose code for Double Core on ESP32-S3-WROOM-1 MCN16R8
