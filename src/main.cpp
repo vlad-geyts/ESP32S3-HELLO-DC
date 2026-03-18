@@ -9,8 +9,15 @@ void heartbeatTask(void *pvParameters);
 void logicTask(void *pvParameters);
 
 void setup() {
+    // Increase delay to give your PC time to recognize the COM port
+    delay(2000); 
+    
     Serial.begin(115200);
-    while(!Serial); // Wait for USB Serial to initialize (typical for S3)
+    
+    // This loop is critical for S3 native USB
+    while(!Serial) {
+        delay(10); 
+    }
 
     Serial.println("\n--- ESP32-S3 Dual Core Booting ---");
     
