@@ -54,16 +54,6 @@ void loop() {
 }
 
 // --- Task Implementations ---
-
-void heartbeatTask(void *pvParameters) {
-    pinMode(LED_BUILTIN, OUTPUT); // Note: verify your specific S3 board LED pin
-    for(;;) {
-        digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-        Serial.printf("[Core %d] Heartbeat - Uptime: %lu ms\n", xPortGetCoreID(), millis());
-        vTaskDelay(pdMS_TO_TICKS(1000)); // Non-blocking delay
-    }
-}
-
 void heartbeatTask(void *pvParameters) {
     const int LED_PIN = 2; // Freenove standard onboard LED
     pinMode(LED_PIN, OUTPUT);
@@ -79,5 +69,14 @@ void heartbeatTask(void *pvParameters) {
                       digitalRead(LED_PIN) ? "ON" : "OFF");
         
         vTaskDelay(pdMS_TO_TICKS(1000)); // 1 second interval
+    }
+}
+void logicTask(void *pvParameters) {
+    for(;;) {
+        // This is where you'd poll your SPI/I2C sensors
+        Serial.printf("[Core %d] Processing Application Logic...\n", xPortGetCoreID());
+        
+        // Use a shorter delay for high-frequency tasks
+        vTaskDelay(pdMS_TO_TICKS(500)); 
     }
 }
