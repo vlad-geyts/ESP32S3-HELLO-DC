@@ -9,16 +9,16 @@ void heartbeatTask(void *pvParameters);
 void logicTask(void *pvParameters);
 
 void setup() {
-    // Increase delay to give your PC time to recognize the COM port
-    delay(2000); 
+// Standard delay for UART stability
+    delay(1000); 
     
     Serial.begin(115200);
     
-    // This loop is critical for S3 native USB
-    while(!Serial) {
-        delay(10); 
-    }
+    // On hardware UART (COM17), Serial is always "true" 
+    // but we wait a moment for the user to open the monitor
+    delay(500);
 
+    Serial.println("\n--- Connected via CH343 UART (COM17) ---");
     Serial.println("\n--- ESP32-S3 Dual Core Booting ---");
     
     // Display Hardware Info
