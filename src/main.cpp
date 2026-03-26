@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ESP.h>        // Include the ESP class header
 
 // --- Modern C++: Namespaces & Constexpr ---
 // We use a namespace to group related constants. This prevents "LED_PIN" from 
@@ -28,11 +29,26 @@ void setup() {
     delay(5000);
 
     Serial.println("\n--- Connected via CH343 UART (COM?) ---");
-    Serial.println("\n--- ESP32-S3 Dual Core Booting ---");
+    Serial.println(  "--- ESP32-S3 Dual Core Booting --------");
+    Serial.println("\n--- ESP Hardware Info------------------");
     
-    // Display Hardware Info
-    Serial.printf("Internal Heap: %d bytes\n", ESP.getFreeHeap());
-    Serial.printf("PSRAM Size: %d bytes\n", ESP.getPsramSize());
+    // Display ESP Information
+
+    Serial.printf("Chip ID: %u\n", ESP.getChipModel()); // Get the 24-bit chip ID
+    Serial.printf("CPU Frequency: %u MHz\n", ESP.getCpuFreqMHz()); // Get CPU frequency
+    Serial.printf("SDK Version: %s\n", ESP.getSdkVersion()); // Get SDK version
+
+    // Get and print flash memory information
+    Serial.printf("Flash Chip Size: %u bytes\n", ESP.getFlashChipSize()); // Get total flash size
+   
+    // Get and print SRAM memory information
+    Serial.printf("Internal free Heap at setup: %d bytes\n", ESP.getFreeHeap());
+    if(psramFound()){
+        Serial.printf("Total PSRAM Size: %d bytes", ESP.getPsramSize());
+    } else {
+         Serial.print("No PSRAM found");
+    }
+
 
     Serial.println("\n---------------------------------------");
     Serial.println("\n");
