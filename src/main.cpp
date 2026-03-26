@@ -49,7 +49,6 @@ void setup() {
          Serial.print("No PSRAM found");
     }
 
-
     Serial.println("\n---------------------------------------");
     Serial.println("\n");
 
@@ -95,8 +94,9 @@ void heartbeatTask(void *pvParameters) {
                       xPortGetCoreID(), 
                       millis(),
                       digitalRead(Config::LedPin) ? "ON" : "OFF");
-        
-        vTaskDelay(pdMS_TO_TICKS(1000)); // 1 second interval
+
+        // Block calling task for 1000ms
+        vTaskDelay(pdMS_TO_TICKS(1000));  // Converts ms to ticks
     }
 }
 void logicTask(void *pvParameters) {
