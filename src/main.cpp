@@ -1,29 +1,44 @@
 #include <Arduino.h>
 
+// --- Modern C++: Namespaces & Constexpr ---
+// We use a namespace to group related constants. This prevents "LED_PIN" from 
+// accidentally conflicting with other libraries.
+namespace Config {
+    // 'constexpr' tells the compiler this value is known at compile-time.
+    // It is more efficient than 'const' and safer than '#define'.
+    constexpr int LedPin    = 2;
+}
+
+// Global Objects
 // Task handles for debugging/control
 TaskHandle_t TaskHeartbeat;
 TaskHandle_t TaskLogic;
 
-// Function prototypes
+// Prototypes
 void heartbeatTask(void *pvParameters);
 void logicTask(void *pvParameters);
 
 void setup() {
 // Standard delay for UART stability
     delay(1000); 
-    
     Serial.begin(115200);
     
-    // On hardware UART (COM17), Serial is always "true" 
+    // On hardware UART (COM?), Serial is always "true" 
     // but we wait a moment for the user to open the monitor
-    delay(500);
+    delay(5000);
 
-    Serial.println("\n--- Connected via CH343 UART (COM17) ---");
+    Serial.println("\n--- Connected via CH343 UART (COM?) ---");
     Serial.println("\n--- ESP32-S3 Dual Core Booting ---");
     
     // Display Hardware Info
     Serial.printf("Internal Heap: %d bytes\n", ESP.getFreeHeap());
     Serial.printf("PSRAM Size: %d bytes\n", ESP.getPsramSize());
+
+    Serial.println("\n---------------------------------------");
+    Serial.println("\n");
+
+       // Configure Hardware using our Namespace
+    pinMode(Config::LedPin,    OUTPUT);
 
     // Create Heartbeat Task on Core 0 (System Core)
     xTaskCreatePinnedToCore(
@@ -54,19 +69,16 @@ void loop() {
 }
 
 // --- Task Implementations ---
-void heartbeatTask(void *pvParameters) {
-    const int LED_PIN = 2; // Freenove standard onboard LED
-    pinMode(LED_PIN, OUTPUT);
-    
+void heartbeatTask(void *pvParameters) {    
     for(;;) {
         // Toggle the LED state
-        digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+        digitalWrite(Config::LedPin, !digitalRead(Config::LedPin));
         
         // Log the status to Serial (Core 0)
         Serial.printf("[Core %d] Heartbeat - Uptime: %lu ms | LED: %s\n", 
                       xPortGetCoreID(), 
-                      millis(), 
-                      digitalRead(LED_PIN) ? "ON" : "OFF");
+                      millis(),
+                      digitalRead(Config::LedPin) ? "ON" : "OFF");
         
         vTaskDelay(pdMS_TO_TICKS(1000)); // 1 second interval
     }
